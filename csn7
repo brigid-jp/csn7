@@ -1,16 +1,17 @@
 #! /usr/bin/env lua
 
--- Copyright (c) 2024 <dev@brigid.jp>
+-- Copyright (c) 2024,2026 <dev@brigid.jp>
 -- This software is released under the MIT License.
 -- https://opensource.org/licenses/mit-license.php
 
-local csn7_version = "1.13"
+local csn7_version = "1.14"
 
 ----------------------------------------------------------------------
 
 local brigid = require "brigid"
 brigid.dlopen_self()
 
+---@diagnostic disable-next-line: deprecated
 local unpack = table.unpack or unpack
 
 ----------------------------------------------------------------------
@@ -151,8 +152,8 @@ function class:debug(...)
     end
 
     local out = self.debug_handle
-    out:write(os.date "[%Y-%m-%d %H:%M:%S]")
-    for i, v in ipairs {...} do
+    out:write(os.date "[%Y-%m-%d %H:%M:%S]" --[[@as string]])
+    for _, v in ipairs {...} do
       out:write("\t", tostring(v))
     end
     out:write "\n"
@@ -685,7 +686,7 @@ function class:make_record(source)
   local data_writer = brigid.data_writer()
   local facets
   local trim = true
-  for i, v in ipairs(buffer) do
+  for _, v in ipairs(buffer) do
     if v.feature then
       local n = #data_writer
       local facet = {
@@ -897,7 +898,7 @@ function commands:make_record(name)
   local char_count = count_utf8(r.text)
   local image_size = 0
   if images then
-    for i, v in ipairs(images) do
+    for _, v in ipairs(images) do
       v.image.data = nil
       image_size = image_size + v.image.size
     end
@@ -916,7 +917,7 @@ function commands:create_record(name)
   local record, images = assert(self:make_record(lines))
 
   if images then
-    for i, v in ipairs(images) do
+    for _, v in ipairs(images) do
       local blob = assert(self:upload_blob(v.image.content_type, v.image.data))
       v.image = blob.blob
     end
@@ -1141,7 +1142,7 @@ function driver_class:find_elements(session_id, using, value)
 end
 
 function driver_class:get_element_id(t)
-  local k, v = next(t)
+  local _, v = next(t)
   return v
 end
 
@@ -1227,7 +1228,7 @@ end
 function driver_commands:find_elements(name, using, value)
   local session_id = assert(self:get_session_id(name))
   local element_ids = assert(self:find_elements(session_id, using, value))
-  for i, v in ipairs(element_ids) do
+  for _, v in ipairs(element_ids) do
     io.write(v, "\n")
   end
 end
@@ -1459,7 +1460,13 @@ if not home then
   -- Windowsの場合
   home = assert(os.getenv "HOMEDRIVE")..assert(os.getenv "HOMEPATH")
 end
-local config_path = home.."/.csn7rc"
+
+local config_path = os.getenv "CONFIG_PATH"
+if not config_path or config_path == "" then
+  config_path = home.."/.csn7rc"
+end
+print(config_path)
+
 local config = read_json(config_path) or {}
 
 if not config.data_dirpath then
