@@ -1460,7 +1460,13 @@ if not home then
   -- Windowsの場合
   home = assert(os.getenv "HOMEDRIVE")..assert(os.getenv "HOMEPATH")
 end
-local config_path = home.."/.csn7rc"
+
+local config_path = os.getenv "CONFIG_PATH"
+if not config_path or config_path == "" then
+  config_path = home.."/.csn7rc"
+end
+print(config_path)
+
 local config = read_json(config_path) or {}
 
 if not config.data_dirpath then
