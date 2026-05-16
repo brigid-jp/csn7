@@ -4,7 +4,7 @@
 -- This software is released under the MIT License.
 -- https://opensource.org/licenses/mit-license.php
 
-local csn7_version = "1.14"
+local csn7_version = "1.15"
 
 ----------------------------------------------------------------------
 
@@ -1465,7 +1465,6 @@ local config_path = os.getenv "CONFIG_PATH"
 if not config_path or config_path == "" then
   config_path = home.."/.csn7rc"
 end
-print(config_path)
 
 local config = read_json(config_path) or {}
 
