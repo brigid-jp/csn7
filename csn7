@@ -4,7 +4,7 @@
 -- This software is released under the MIT License.
 -- https://opensource.org/licenses/mit-license.php
 
-local csn7_version = "1.15"
+local csn7_version = "1.16"
 
 ----------------------------------------------------------------------
 
@@ -933,6 +933,37 @@ end
 
 ----------------------------------------------------------------------
 
+-- https://docs.slack.dev/reference/block-kit/blocks/markdown-block/
+-- https://docs.slack.dev/reference/block-kit/blocks/section-block/
+-- https://docs.slack.dev/reference/block-kit/composition-objects/text-object/
+
+---@param text string
+---@param block_type string?
+local function make_block(text, block_type)
+  if block_type == "section/plain_text" then
+    return {
+      type = "section",
+      text = {
+        type = "plain_text",
+        text = text,
+      },
+    }
+  elseif block_type == "section/mrkdwn" then
+    return {
+      type = "section",
+      text = {
+        type = "mrkdwn",
+        text = text,
+      },
+    }
+  else
+    return {
+      type = "markdown",
+      text = text,
+    }
+  end
+end
+
 function commands:slack(name, channel, username, iconname)
   local app = assert(self.config.slack.apps[name])
   local text = io.read "*a"
@@ -953,13 +984,7 @@ function commands:slack(name, channel, username, iconname)
     token = app.oauth_token;
     channel = assert(channel);
     blocks = {
-      {
-        type = "section";
-        text = {
-          type = "mrkdwn";
-          text = text;
-        };
-      };
+      make_block(text, app.block_type)
     };
     username = username;
     icon_url = self.config.icons[iconname];
