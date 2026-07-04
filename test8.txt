@@ -1,0 +1,10 @@
+| key | value |
+| --- | ----: |
+| foo |    42 |
+
+- [ ] incomplete task
+- [x] completed task
+
+```sh
+curl -LO https://raw.githubusercontent.com/brigid-jp/csn7/refs/heads/main/csn7
+```
