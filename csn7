@@ -954,11 +954,13 @@ function commands:slack(name, channel, username, iconname)
     channel = assert(channel);
     blocks = {
       {
-        type = "section";
-        text = {
-          type = "mrkdwn";
-          text = text;
-        };
+        -- type = "section";
+        -- text = {
+        --   type = "mrkdwn";
+        --   text = text;
+        -- };
+	type = "markdown",
+	text = text,
       };
     };
     username = username;
